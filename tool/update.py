@@ -1,43 +1,48 @@
 from csv import reader
 from datetime import date
 from sys import argv
-
-from requests import codes, get
+from urllib.request import urlopen
+from urllib.error import HTTPError
 
 
 def iab_minutes(date):
     year = date.year
-    query_date = date.isoformat()
     url = f"https://www.iab.org/documents/minutes/minutes-{year}/iab-minutes-{date}/"
-    result = get(url)
     minutes = None
-    if result.status_code == codes.ok:
-        minutes = url
+    try:
+        with urlopen(url):
+            minutes = url
+    except HTTPError:
+        pass
     return minutes
 
 
 def iesg_minutes(date):
     year = date.year
-    query_date = date.isoformat()
     url = f"https://www6.ietf.org/iesg/minutes/{year}/minutes-{date}.txt"
-    result = get(url)
     minutes = None
-    if result.status_code == codes.ok:
-        minutes = url
+    try:
+        with urlopen(url):
+            minutes = url
+    except HTTPError:
+        pass
     return minutes
 
 
 def id_updates(date):
-    query_date = date.isoformat()
     url = "https://www.ietf.org/id/all_id.txt"
-    result = get(url)
     records = []
-    if result.status_code == codes.ok:
-        content = result.content.decode("utf-8")
-        _records = list(reader(content.splitlines(), delimiter="\t"))
-        records = [
-            record for record in _records if len(record) > 1 and record[1] == query_date
-        ]
+    try:
+        with urlopen(url) as result:
+            content = result.read().decode("utf-8")
+            _records = list(reader(content.splitlines(), delimiter="\t"))
+            records = [
+                record
+                for record in _records
+                if len(record) > 1 and record[1] == str(date)
+            ]
+    except HTTPError:
+        pass
     return records
 
 
