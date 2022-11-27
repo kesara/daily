@@ -43,7 +43,10 @@ def id_updates(date):
             content = f.read().decode("utf-8")
             _records = list(reader(content.splitlines(), delimiter="\t"))
             records = [
-                record
+                {
+                    'id': record[0],
+                    'state': record[2]
+                }
                 for record in _records
                 if len(record) > 1 and record[1] == str(date)
             ]
