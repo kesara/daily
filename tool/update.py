@@ -1,5 +1,6 @@
 from csv import reader
 from datetime import date
+from json import dumps
 from sys import argv
 from urllib.request import urlopen
 from urllib.error import HTTPError
@@ -102,4 +103,4 @@ if __name__ == "__main__":
         "id_updates": id_updates(day),
         "ietf_announce": ietf_announce(day),
     }
-    print(results)
+    print(dumps(results))
